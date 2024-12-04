@@ -20,42 +20,36 @@ const solvePuzzle = (
 
 // Puzzle 01
 const isSafe = (line: number[]): boolean => {
-  const start: number = line[0];
-  const end: number = line[line.length - 1];
+  const startLevel: number = line[0];
+  const endLevel: number = line[line.length - 1];
   let checkNumber: number = 0;
   for (let i = 0; i < line.length - 1; i++) {
     const diff: number = line[i] - line[i + 1];
-    // Increasing : diff has to be between -1 and -3
-    start < end && diff > -4 && diff < 0 && checkNumber++;
-    // Decreasing : diff has to be between 1 and 3
-    start > end && diff < 4 && diff > 0 && checkNumber++;
+    // If increasing, diff has to be between -1 and -3
+    startLevel < endLevel && diff > -4 && diff < 0 && checkNumber++;
+    // If decreasing, diff has to be between 1 and 3
+    startLevel > endLevel && diff < 4 && diff > 0 && checkNumber++;
   }
   // Return boolean
   return checkNumber > line.length - 2;
 };
-// Log the result
+// Log result
 console.log("🚀 ~ result01:", solvePuzzle(input, isSafe));
 
 // Puzzle 02
 const isSafeWithTolerate = (line: number[]): boolean => {
-  const start: number = line[0];
-  const end: number = line[line.length - 1];
-  let checkNumber: number = 0;
-  for (let i = 0; i < line.length - 1; i++) {
-    let diff: number = line[i] - line[i + 1];
-    // Check if line is safe when tolerate a bad level
-    if (
-      (start < end && diff < -3 && diff > -1) ||
-      (start > end && diff > 3 && diff < 1)
-    )
-      diff = line[i] - line[i + 2];
-    // Increasing : diff has to be between -1 and -3
-    start < end && diff > -4 && diff < 0 && checkNumber++;
-    // Decreasing : diff has to be between 1 and 3
-    start > end && diff < 4 && diff > 0 && checkNumber++;
+  // Check if line is safe without tolerate a single bad level
+  const result = isSafe(line);
+  // Check if line is safe with tolerate a single bad level
+  if (!result) {
+    for (let i = 0; i < line.length; i++) {
+      const modifiedLine = [...line.slice(0, i), ...line.slice(i + 1)];
+      if (isSafe(modifiedLine)) {
+        return true;
+      }
+    }
   }
-  // Return boolean
-  return checkNumber > line.length - 2;
+  return result;
 };
-// Log the result
+// Log result
 console.log("🚀 ~ result02:", solvePuzzle(input, isSafeWithTolerate));
